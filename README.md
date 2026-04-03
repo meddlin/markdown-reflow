@@ -1,4 +1,5 @@
-# Markdown Reflow
+# Markdown Reflow <img width="256" height="256" alt="Markdown reflow extension logo design" src="https://github.com/user-attachments/assets/73a67431-92f4-4d5d-afda-ecd915f90240" />
+
 
 Manual prose reflow for Markdown and MDX in VS Code.
 
