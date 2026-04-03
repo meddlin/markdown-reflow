@@ -9,8 +9,10 @@ rewriting protected Markdown and MDX structures.
 ## Behavior
 
 - Reflows the current selection when a selection exists and
-  `wrap120.selectionOnlyWhenSelected` is enabled.
+  `markdownReflow.selectionOnlyWhenSelected` is enabled.
 - Reflows the full document when there is no selection.
+- Wraps prose to `100` columns by default, or to the user-defined
+  `markdownReflow.maxLineLength` value when set.
 - Leaves these regions unchanged:
   - fenced code blocks
   - indented code blocks
@@ -24,10 +26,10 @@ rewriting protected Markdown and MDX structures.
 
 ## Settings
 
-- `wrap120.maxLineLength`
-- `wrap120.languages`
-- `wrap120.preserveListItems`
-- `wrap120.selectionOnlyWhenSelected`
+- `markdownReflow.maxLineLength`
+- `markdownReflow.languages`
+- `markdownReflow.preserveListItems`
+- `markdownReflow.selectionOnlyWhenSelected`
 
 ## Development
 
