@@ -1,0 +1,112 @@
+{
+  "name": "markdown-reflow",
+  "displayName": "Markdown Reflow",
+  "description": "Manual prose reflow for Markdown and MDX without touching code or MDX metadata blocks.",
+  "version": "0.1.0",
+  "publisher": "rushinglabs",
+  "license": "MIT",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "mdx",
+    "wrap",
+    "reflow",
+    "formatting"
+  ],
+  "activationEvents": [
+    "onCommand:wrap120.reflow"
+  ],
+  "main": "./out/extension.js",
+  "files": [
+    "out",
+    "icon.png",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "SUPPORT.md",
+    "package.json"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "wrap120.reflow",
+        "title": "Markdown Reflow: Reflow Prose"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "wrap120.reflow",
+          "when": "editorLangId == markdown || editorLangId == mdx"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "wrap120.reflow",
+          "when": "editorLangId == markdown || editorLangId == mdx",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "wrap120.reflow",
+          "when": "editorLangId == markdown || editorLangId == mdx",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Markdown Reflow",
+      "properties": {
+        "wrap120.maxLineLength": {
+          "type": "number",
+          "default": 120,
+          "minimum": 20,
+          "description": "Maximum line length for wrapped prose."
+        },
+        "wrap120.languages": {
+          "type": "array",
+          "default": [
+            "markdown",
+            "mdx"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Language IDs this command is allowed to edit."
+        },
+        "wrap120.preserveListItems": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, leave Markdown list items and their continuation blocks unchanged."
+        },
+        "wrap120.selectionOnlyWhenSelected": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, only reflow paragraphs intersecting the current selection."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\" && tsc -p ./tsconfig.json",
+    "watch": "tsc -w -p ./tsconfig.json",
+    "test": "vitest run --config ./vitest.config.ts",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.2",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.0"
+  }
+}
