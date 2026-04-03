@@ -3,25 +3,25 @@ import * as vscode from 'vscode'
 import { reflowMarkdownLike, type LineRange, type ReflowOptions } from './reflow'
 
 export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.commands.registerCommand('wrap120.reflow', async () => {
+  let disposable = vscode.commands.registerCommand('markdownReflow.reflow', async () => {
     let editor = vscode.window.activeTextEditor
 
     if (!editor) {
       return
     }
 
-    let configuration = vscode.workspace.getConfiguration('wrap120', editor.document)
+    let configuration = vscode.workspace.getConfiguration('markdownReflow', editor.document)
     let enabledLanguages = configuration.get<string[]>('languages', ['markdown', 'mdx'])
 
     if (!enabledLanguages.includes(editor.document.languageId)) {
       void vscode.window.showInformationMessage(
-        `Wrap 120 is disabled for language "${editor.document.languageId}".`,
+        `Markdown Reflow is disabled for language "${editor.document.languageId}".`,
       )
       return
     }
 
     let options: ReflowOptions = {
-      maxLineLength: configuration.get<number>('maxLineLength', 120),
+      maxLineLength: configuration.get<number>('maxLineLength', 100),
       preserveListItems: configuration.get<boolean>('preserveListItems', true),
     }
 

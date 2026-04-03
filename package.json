@@ -2,7 +2,7 @@
   "name": "markdown-reflow",
   "displayName": "Markdown Reflow",
   "description": "Manual prose reflow for Markdown and MDX without touching code or MDX metadata blocks.",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "publisher": "rushinglabs",
   "license": "MIT",
   "icon": "icon.png",
@@ -21,7 +21,7 @@
     "formatting"
   ],
   "activationEvents": [
-    "onCommand:wrap120.reflow"
+    "onCommand:markdownReflow.reflow"
   ],
   "main": "./out/extension.js",
   "files": [
@@ -36,27 +36,27 @@
   "contributes": {
     "commands": [
       {
-        "command": "wrap120.reflow",
+        "command": "markdownReflow.reflow",
         "title": "Markdown Reflow: Reflow Prose"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "wrap120.reflow",
+          "command": "markdownReflow.reflow",
           "when": "editorLangId == markdown || editorLangId == mdx"
         }
       ],
       "editor/title": [
         {
-          "command": "wrap120.reflow",
+          "command": "markdownReflow.reflow",
           "when": "editorLangId == markdown || editorLangId == mdx",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
-          "command": "wrap120.reflow",
+          "command": "markdownReflow.reflow",
           "when": "editorLangId == markdown || editorLangId == mdx",
           "group": "1_modification"
         }
@@ -65,13 +65,13 @@
     "configuration": {
       "title": "Markdown Reflow",
       "properties": {
-        "wrap120.maxLineLength": {
+        "markdownReflow.maxLineLength": {
           "type": "number",
-          "default": 120,
+          "default": 100,
           "minimum": 20,
           "description": "Maximum line length for wrapped prose."
         },
-        "wrap120.languages": {
+        "markdownReflow.languages": {
           "type": "array",
           "default": [
             "markdown",
@@ -82,12 +82,12 @@
           },
           "description": "Language IDs this command is allowed to edit."
         },
-        "wrap120.preserveListItems": {
+        "markdownReflow.preserveListItems": {
           "type": "boolean",
           "default": true,
           "description": "When enabled, leave Markdown list items and their continuation blocks unchanged."
         },
-        "wrap120.selectionOnlyWhenSelected": {
+        "markdownReflow.selectionOnlyWhenSelected": {
           "type": "boolean",
           "default": true,
           "description": "When enabled, only reflow paragraphs intersecting the current selection."

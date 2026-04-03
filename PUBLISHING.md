@@ -14,7 +14,7 @@ npx @vscode/vsce package
 Install the resulting `.vsix` with:
 
 ```bash
-code --install-extension ./markdown-reflow-0.1.0.vsix
+code --install-extension ./markdown-reflow-<ver>.vsix
 ```
 
 ## Marketplace Prerequisites
