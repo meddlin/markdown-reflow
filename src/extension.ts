@@ -7,6 +7,10 @@ import {
   type TextReplacement,
 } from './automaticReflow'
 import { reflowMarkdownLike, type LineRange, type ReflowOptions } from './reflow'
+import {
+  getMaxLineLengthInputValidationMessage,
+  parseMaxLineLengthInput,
+} from './settings'
 import { insertMarkdownTableOfContents } from './toc'
 
 const automaticReflowDelayMs = 150
@@ -44,6 +48,38 @@ export function activate(context: vscode.ExtensionContext) {
 
     await replaceDocumentText(editor, originalText, nextText)
   })
+
+  let setMaxLineLengthDisposable = vscode.commands.registerCommand(
+    'markdownReflow.setMaxLineLength',
+    async () => {
+      let editor = vscode.window.activeTextEditor
+      let configuration = vscode.workspace.getConfiguration('markdownReflow', editor?.document)
+      let currentMaxLineLength = configuration.get<number>('maxLineLength', 100)
+
+      let input = await vscode.window.showInputBox({
+        title: 'Set Maximum Line Length',
+        prompt: 'Enter the maximum Markdown Reflow line length.',
+        placeHolder: '100',
+        value: String(currentMaxLineLength),
+        validateInput: (value) => getMaxLineLengthInputValidationMessage(value),
+      })
+
+      let nextMaxLineLength = parseMaxLineLengthInput(input)
+
+      if (nextMaxLineLength === undefined) {
+        return
+      }
+
+      let configurationTarget = vscode.workspace.workspaceFolders?.length
+        ? vscode.ConfigurationTarget.Workspace
+        : vscode.ConfigurationTarget.Global
+
+      await configuration.update('maxLineLength', nextMaxLineLength, configurationTarget)
+      void vscode.window.showInformationMessage(
+        `Markdown Reflow maximum line length set to ${nextMaxLineLength}.`,
+      )
+    },
+  )
 
   let automaticReflowDisposable = vscode.workspace.onDidChangeTextDocument((event) => {
     if (automaticReflowEditInProgress) {
@@ -169,6 +205,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     reflowDisposable,
+    setMaxLineLengthDisposable,
     automaticReflowDisposable,
     clearAutomaticReflowTimerDisposable,
     tocDisposable,

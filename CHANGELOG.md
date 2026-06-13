@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - New: Automatically reflow Markdown/MDX prose while typing when an edited line exceeds the
   configured maximum line length.
 - New: Added `markdownReflow.automaticReflow` to toggle automatic reflow on or off.
+- New: Added `Markdown Reflow: Set Maximum Line Length` to update
+  `markdownReflow.maxLineLength` from the command palette.
 
 ## 0.3.0
 

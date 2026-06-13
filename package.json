@@ -2,7 +2,7 @@
   "name": "markdown-reflow",
   "displayName": "Markdown Reflow",
   "description": "Automatic and manual prose reflow for Markdown and MDX without touching code or MDX metadata blocks.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "rushinglabs",
   "license": "MIT",
   "icon": "icon.png",
@@ -23,6 +23,7 @@
   "activationEvents": [
     "onLanguage:markdown",
     "onLanguage:mdx",
+    "onCommand:markdownReflow.setMaxLineLength",
     "onCommand:markdownReflow.reflow",
     "onCommand:markdownReflow.generateToc"
   ],
@@ -43,6 +44,10 @@
         "title": "Markdown Reflow: Reflow Prose"
       },
       {
+        "command": "markdownReflow.setMaxLineLength",
+        "title": "Markdown Reflow: Set Maximum Line Length"
+      },
+      {
         "command": "markdownReflow.generateToc",
         "title": "Markdown Reflow: Generate Table of Contents"
       }
@@ -51,6 +56,10 @@
       "commandPalette": [
         {
           "command": "markdownReflow.reflow",
+          "when": "editorLangId == markdown || editorLangId == mdx"
+        },
+        {
+          "command": "markdownReflow.setMaxLineLength",
           "when": "editorLangId == markdown || editorLangId == mdx"
         },
         {
