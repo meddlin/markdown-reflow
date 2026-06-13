@@ -11,9 +11,13 @@ import {
   getMaxLineLengthInputValidationMessage,
   parseMaxLineLengthInput,
 } from './settings'
+import { syncMaxLineLengthRulers, type EditorRuler } from './rulers'
 import { insertMarkdownTableOfContents } from './toc'
 
 const automaticReflowDelayMs = 150
+const managedMaxLineLengthRulersStateKey = 'markdownReflow.managedMaxLineLengthRulers'
+
+type ManagedMaxLineLengthRulers = Record<string, number>
 
 export function activate(context: vscode.ExtensionContext) {
   let automaticReflowEditInProgress = false
@@ -75,8 +79,34 @@ export function activate(context: vscode.ExtensionContext) {
         : vscode.ConfigurationTarget.Global
 
       await configuration.update('maxLineLength', nextMaxLineLength, configurationTarget)
+      await syncMaxLineLengthIndicators(context)
       void vscode.window.showInformationMessage(
         `Markdown Reflow maximum line length set to ${nextMaxLineLength}.`,
+      )
+    },
+  )
+
+  let toggleMaxLineLengthIndicatorDisposable = vscode.commands.registerCommand(
+    'markdownReflow.toggleMaxLineLengthIndicator',
+    async () => {
+      let editor = vscode.window.activeTextEditor
+      let configuration = vscode.workspace.getConfiguration('markdownReflow', editor?.document)
+      let nextShowMaxLineLengthIndicator = !configuration.get<boolean>(
+        'showMaxLineLengthIndicator',
+        true,
+      )
+
+      await configuration.update(
+        'showMaxLineLengthIndicator',
+        nextShowMaxLineLengthIndicator,
+        getConfigurationTarget(),
+      )
+      await syncMaxLineLengthIndicators(context)
+
+      void vscode.window.showInformationMessage(
+        nextShowMaxLineLengthIndicator
+          ? 'Markdown Reflow maximum line length indicator shown.'
+          : 'Markdown Reflow maximum line length indicator hidden.',
       )
     },
   )
@@ -190,6 +220,18 @@ export function activate(context: vscode.ExtensionContext) {
     }
   })
 
+  let maxLineLengthIndicatorConfigurationDisposable =
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (
+        event.affectsConfiguration('markdownReflow.maxLineLength') ||
+        event.affectsConfiguration('markdownReflow.showMaxLineLengthIndicator') ||
+        event.affectsConfiguration('markdownReflow.languages') ||
+        event.affectsConfiguration('editor.rulers')
+      ) {
+        void syncMaxLineLengthIndicators(context)
+      }
+    })
+
   let tocDisposable = vscode.commands.registerCommand('markdownReflow.generateToc', async () => {
     let editor = vscode.window.activeTextEditor
 
@@ -206,10 +248,14 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     reflowDisposable,
     setMaxLineLengthDisposable,
+    toggleMaxLineLengthIndicatorDisposable,
     automaticReflowDisposable,
     clearAutomaticReflowTimerDisposable,
+    maxLineLengthIndicatorConfigurationDisposable,
     tocDisposable,
   )
+
+  void syncMaxLineLengthIndicators(context)
 }
 
 export function deactivate() {
@@ -251,7 +297,7 @@ function isMarkdownReflowLanguageEnabled(
   document: vscode.TextDocument,
   configuration: vscode.WorkspaceConfiguration,
 ): boolean {
-  let enabledLanguages = configuration.get<string[]>('languages', ['markdown', 'mdx'])
+  let enabledLanguages = getMarkdownReflowLanguages(configuration)
   return enabledLanguages.includes(document.languageId)
 }
 
@@ -260,6 +306,61 @@ function getReflowOptions(configuration: vscode.WorkspaceConfiguration): ReflowO
     maxLineLength: configuration.get<number>('maxLineLength', 100),
     preserveListItems: configuration.get<boolean>('preserveListItems', true),
   }
+}
+
+function getMarkdownReflowLanguages(configuration: vscode.WorkspaceConfiguration): string[] {
+  return configuration.get<string[]>('languages', ['markdown', 'mdx'])
+}
+
+async function syncMaxLineLengthIndicators(
+  context: vscode.ExtensionContext,
+): Promise<void> {
+  let markdownReflowConfiguration = vscode.workspace.getConfiguration('markdownReflow')
+  let showMaxLineLengthIndicator = markdownReflowConfiguration.get<boolean>(
+    'showMaxLineLengthIndicator',
+    true,
+  )
+  let maxLineLength = markdownReflowConfiguration.get<number>('maxLineLength', 100)
+  let languages = getMarkdownReflowLanguages(markdownReflowConfiguration)
+  let activeLanguages = new Set(languages)
+  let managedRulers = context.workspaceState.get<ManagedMaxLineLengthRulers>(
+    managedMaxLineLengthRulersStateKey,
+    {},
+  )
+  let nextManagedRulers: ManagedMaxLineLengthRulers = { ...managedRulers }
+  let languageIds = [...new Set([...languages, ...Object.keys(managedRulers)])]
+  let configurationTarget = getConfigurationTarget()
+
+  for (let languageId of languageIds) {
+    let editorConfiguration = vscode.workspace.getConfiguration('editor', { languageId })
+    let currentRulers = editorConfiguration.get<EditorRuler[]>('rulers', [])
+    let result = syncMaxLineLengthRulers(Array.isArray(currentRulers) ? currentRulers : [], {
+      enabled: showMaxLineLengthIndicator && activeLanguages.has(languageId),
+      maxLineLength,
+      previousManagedLineLength: managedRulers[languageId],
+    })
+
+    if (result.changed) {
+      await editorConfiguration.update('rulers', result.rulers, configurationTarget, true)
+    }
+
+    if (result.managedLineLength === undefined) {
+      delete nextManagedRulers[languageId]
+    } else {
+      nextManagedRulers[languageId] = result.managedLineLength
+    }
+  }
+
+  await context.workspaceState.update(
+    managedMaxLineLengthRulersStateKey,
+    Object.keys(nextManagedRulers).length ? nextManagedRulers : undefined,
+  )
+}
+
+function getConfigurationTarget(): vscode.ConfigurationTarget {
+  return vscode.workspace.workspaceFolders?.length
+    ? vscode.ConfigurationTarget.Workspace
+    : vscode.ConfigurationTarget.Global
 }
 
 function mergeLineRanges(a: LineRange, b: LineRange): LineRange {

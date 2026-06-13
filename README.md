@@ -10,6 +10,8 @@ reflowing Markdown prose and generating a table of contents from Markdown headin
 
 - `Markdown Reflow: Reflow Prose` wraps plain prose paragraphs to a configurable line length.
 - `Markdown Reflow: Set Maximum Line Length` updates the configured prose line length.
+- `Markdown Reflow: Toggle Maximum Line Length Indicator` shows or hides the editor ruler at
+  the configured prose line length.
 - `Markdown Reflow: Generate Table of Contents` inserts an anchor-linked table of contents near
   the top of the current document.
 
@@ -22,8 +24,11 @@ reflowing Markdown prose and generating a table of contents from Markdown headin
   `markdownReflow.maxLineLength`.
 - Wraps prose to `100` columns by default, or to the user-defined
   `markdownReflow.maxLineLength` value when set.
+- Shows a vertical editor ruler at `markdownReflow.maxLineLength` by default.
 - Updates `markdownReflow.maxLineLength` from the command palette when using
   `Markdown Reflow: Set Maximum Line Length`.
+- Toggles `markdownReflow.showMaxLineLengthIndicator` from the command palette when using
+  `Markdown Reflow: Toggle Maximum Line Length Indicator`.
 - Generates a table of contents from ATX headings (`#` through `######`) outside fenced code
   blocks and frontmatter.
 - Inserts the table of contents after frontmatter when frontmatter exists.
@@ -44,6 +49,7 @@ reflowing Markdown prose and generating a table of contents from Markdown headin
 
 - `markdownReflow.maxLineLength`
 - `markdownReflow.automaticReflow`
+- `markdownReflow.showMaxLineLengthIndicator`
 - `markdownReflow.languages`
 - `markdownReflow.preserveListItems`
 - `markdownReflow.selectionOnlyWhenSelected`

@@ -24,6 +24,7 @@
     "onLanguage:markdown",
     "onLanguage:mdx",
     "onCommand:markdownReflow.setMaxLineLength",
+    "onCommand:markdownReflow.toggleMaxLineLengthIndicator",
     "onCommand:markdownReflow.reflow",
     "onCommand:markdownReflow.generateToc"
   ],
@@ -48,6 +49,10 @@
         "title": "Markdown Reflow: Set Maximum Line Length"
       },
       {
+        "command": "markdownReflow.toggleMaxLineLengthIndicator",
+        "title": "Markdown Reflow: Toggle Maximum Line Length Indicator"
+      },
+      {
         "command": "markdownReflow.generateToc",
         "title": "Markdown Reflow: Generate Table of Contents"
       }
@@ -60,6 +65,10 @@
         },
         {
           "command": "markdownReflow.setMaxLineLength",
+          "when": "editorLangId == markdown || editorLangId == mdx"
+        },
+        {
+          "command": "markdownReflow.toggleMaxLineLengthIndicator",
           "when": "editorLangId == markdown || editorLangId == mdx"
         },
         {
@@ -105,6 +114,11 @@
           "type": "boolean",
           "default": true,
           "description": "When enabled, automatically reflow prose while typing after edited lines exceed the maximum line length."
+        },
+        "markdownReflow.showMaxLineLengthIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, show an editor ruler at the configured maximum line length for Markdown Reflow languages."
         },
         "markdownReflow.languages": {
           "type": "array",

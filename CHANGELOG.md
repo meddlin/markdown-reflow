@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- New: Added a maximum line length editor ruler that follows `markdownReflow.maxLineLength`.
+- New: Added `Markdown Reflow: Toggle Maximum Line Length Indicator` and
+  `markdownReflow.showMaxLineLengthIndicator` to show or hide the ruler.
+
 ## 0.4.0
 
 - New: Automatically reflow Markdown/MDX prose while typing when an edited line exceeds the
