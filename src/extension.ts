@@ -19,7 +19,7 @@ import {
   parseMaxLineLengthInput,
 } from './settings'
 import { syncMaxLineLengthRulers, type EditorRuler } from './rulers'
-import { insertMarkdownTableOfContents } from './toc'
+import { extractMarkdownHeadings, insertMarkdownTableOfContents } from './toc'
 
 const automaticReflowDelayMs = 150
 const managedMaxLineLengthRulersStateKey = 'markdownReflow.managedMaxLineLengthRulers'
@@ -56,6 +56,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     let originalText = editor.document.getText()
     let nextText = reflowMarkdownLike(originalText, options, selectionRange)
+
+    if (nextText === originalText) {
+      void vscode.window.showInformationMessage(
+        'Markdown Reflow found no prose that needed reflowing.',
+      )
+      return
+    }
 
     await replaceDocumentText(editor, originalText, nextText)
   })
@@ -314,6 +321,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     let originalText = editor.document.getText()
     let nextText = insertMarkdownTableOfContents(originalText)
+
+    if (nextText === originalText) {
+      let headings = extractMarkdownHeadings(originalText.split(/\r?\n/))
+
+      void vscode.window.showInformationMessage(
+        headings.length === 0
+          ? 'Markdown Reflow found no headings to include in a table of contents.'
+          : 'Markdown Reflow table of contents is already up to date.',
+      )
+      return
+    }
 
     await replaceDocumentText(editor, originalText, nextText)
   })

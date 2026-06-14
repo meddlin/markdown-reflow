@@ -93,18 +93,6 @@
           "when": "editorLangId == markdown || editorLangId == mdx"
         }
       ],
-      "editor/title": [
-        {
-          "command": "markdownReflow.reflow",
-          "when": "editorLangId == markdown || editorLangId == mdx",
-          "group": "navigation"
-        },
-        {
-          "command": "markdownReflow.generateToc",
-          "when": "editorLangId == markdown || editorLangId == mdx",
-          "group": "navigation"
-        }
-      ],
       "editor/context": [
         {
           "command": "markdownReflow.reflow",
